@@ -1,18 +1,23 @@
 package global.coda.hms.delegate;
 
 import java.util.List;
-import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import global.coda.hms.exception.BusinessException;
 import global.coda.hms.exception.SystemException;
 import global.coda.hms.helper.RecordDetailsHelper;
-import global.coda.hms.model.RecordDetails;
+import global.coda.hms.model.DoctorPatientMapping;
 
 /**
  *
  * @author Vishal
  */
 public class RecordOperationDelegate {
+
+	/** The logger. */
+	private final Logger logger = LogManager.getLogger(RecordOperationDelegate.class);
 
 	/** The record details helper. */
 	private RecordDetailsHelper recordDetailsHelper = new RecordDetailsHelper();
@@ -21,12 +26,15 @@ public class RecordOperationDelegate {
 	 * Read record by id.
 	 *
 	 * @param id the id
-	 * @return the map
+	 * @return the DoctorPatientMapping
 	 * @throws BusinessException the business exception
-	 * @throws SystemException the system exception
+	 * @throws SystemException   the system exception
 	 */
-	public Map<String, List<RecordDetails>> readRecordById(int id) throws BusinessException, SystemException {
-		return recordDetailsHelper.readRecordById(id);
+	public DoctorPatientMapping readRecordById(int id) throws BusinessException, SystemException {
+		logger.entry(id);
+		DoctorPatientMapping doctorPatientMapping = recordDetailsHelper.readRecordById(id);
+		logger.traceExit(doctorPatientMapping);
+		return doctorPatientMapping;
 	}
 
 	/**
@@ -34,10 +42,13 @@ public class RecordOperationDelegate {
 	 *
 	 * @return the map
 	 * @throws BusinessException the business exception
-	 * @throws SystemException the system exception
+	 * @throws SystemException   the system exception
 	 */
-	public Map<String, List<RecordDetails>> readAllRecord() throws BusinessException, SystemException {
-		return recordDetailsHelper.readAllRecord();
+	public List<DoctorPatientMapping> readAllRecord() throws BusinessException, SystemException {
+		logger.traceEntry();
+		List<DoctorPatientMapping> listDoctorPatientMapping = recordDetailsHelper.readAllRecord();
+		logger.traceExit(listDoctorPatientMapping);
+		return listDoctorPatientMapping;
 	}
 
 }

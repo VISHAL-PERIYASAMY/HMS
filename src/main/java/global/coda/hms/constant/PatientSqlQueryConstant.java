@@ -13,6 +13,9 @@ public final class PatientSqlQueryConstant {
 
 	}
 
+	public static final String USER_DETAIL_INSERT = "INSERT INTO `t_user_details` (`username`, `password`, `fk_role_id`,"
+			+ " `firstname`, `lastname`, `city`, `state`,`phone_number`) VALUES (?, ?, 4, ?, ?, ?, ?,?);";
+
 	public static final String PATIENT_INSERT = "INSERT INTO `t_patient` (`fk_user_id`, `blood_group`, `weight`) VALUES (?, ?, ?)";
 
 	public static final String PATIENT_SELECT_ALL = "select * from hms.t_user_details as user LEFT JOIN hms.t_patient"

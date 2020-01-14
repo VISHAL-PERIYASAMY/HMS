@@ -12,6 +12,9 @@ public final class DoctorSqlQueryConstant {
 	private DoctorSqlQueryConstant() {
 	}
 
+	public static final String USER_DETAIL_INSERT = "INSERT INTO `t_user_details` (`username`, `password`, `fk_role_id`,"
+			+ " `firstname`, `lastname`, `city`, `state`,`phone_number`) VALUES (?, ?, 3, ?, ?, ?, ?,?);";
+
 	public static final String DOCTOR_INSERT = "INSERT INTO `t_doctor` (`doctor_specialization`, `fk_user_id`) VALUES (?, ?)";
 
 	public static final String DOCTOR_SELECT_ALL = "select * from hms.t_user_details as user LEFT JOIN hms.t_doctor as doctor ON user.pk_user_id ="

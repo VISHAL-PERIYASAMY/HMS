@@ -14,7 +14,9 @@ public final class ApplicationConstant {
 
 	public static final String DOCTOR_ID = "fk_doctor_id";
 
-	public static final String PATIENT_ID = "fk_patient_id";
+	public static final String PATIENT_NAME = "patient_name";
+
+	public static final String DOCTOR_NAME = "doctor_name";
 
 	public static final String SPACE = " ";
 

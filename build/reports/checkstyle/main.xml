@@ -30,8 +30,6 @@
 </file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\dao\PatientDao.java">
 </file>
-<file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\dao\RecordDetailsDao.java">
-</file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\delegate\DoctorOperationDelegate.java">
 </file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\delegate\PatientOperationDelegate.java">
@@ -66,7 +64,11 @@
 </file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\helper\RecordDetailsHelper.java">
 </file>
+<file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\jerseyconfig\JerseyConfig.java">
+</file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\model\Doctor.java">
+</file>
+<file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\model\DoctorPatientMapping.java">
 </file>
 <file name="C:\Users\VC\Desktop\HMS\HMS\src\main\java\global\coda\hms\model\Hospital.java">
 </file>

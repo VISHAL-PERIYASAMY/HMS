@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,6 @@ import global.coda.hms.constant.HttpStatusConstant;
 import global.coda.hms.constant.NumericConstants;
 import global.coda.hms.constant.PatientSqlQueryConstant;
 import global.coda.hms.constant.UserSqlQueryConstant;
-import global.coda.hms.exception.PatientNotFoundException;
 import global.coda.hms.exception.UserNameAlreadyExistException;
 import global.coda.hms.model.Patient;
 
@@ -40,21 +40,13 @@ public class PatientDao {
 	 * @throws Exception                     Connection error and other error
 	 */
 	public boolean addPatientDao(Patient patient) throws UserNameAlreadyExistException, SQLException, Exception {
-		logger.traceEntry();
+		logger.entry(patient);
 		try (Connection connection = DataBaseConfig.getConnection()) {
-			PreparedStatement preparedStatementPatient = connection
-					.prepareStatement(UserSqlQueryConstant.CHECK_USER_NAME);
-			preparedStatementPatient.setString(NumericConstants.ONE, patient.getUsername());
-			ResultSet resultSet = preparedStatementPatient.executeQuery();
-			if (resultSet.next()) {
-				throw new UserNameAlreadyExistException(
-						HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE + ApplicationConstant.NAME_EXIST);
-			}
-			preparedStatementPatient = connection.prepareStatement(UserSqlQueryConstant.USER_DETAIL_INSERT,
+			PreparedStatement preparedStatementPatient;
+			preparedStatementPatient = connection.prepareStatement(PatientSqlQueryConstant.USER_DETAIL_INSERT,
 					Statement.RETURN_GENERATED_KEYS);
 			preparedStatementPatient.setString(NumericConstants.ONE, patient.getUsername());
 			preparedStatementPatient.setString(NumericConstants.TWO, patient.getPassword());
-			preparedStatementPatient.setInt(NumericConstants.THREE, patient.getRoleId());
 			preparedStatementPatient.setString(NumericConstants.FOUR, patient.getUserFirstName());
 			preparedStatementPatient.setString(NumericConstants.FIVE, patient.getUserLastName());
 			preparedStatementPatient.setString(NumericConstants.SIX, patient.getUserCity());
@@ -68,8 +60,9 @@ public class PatientDao {
 			preparedStatementPatient.setString(NumericConstants.TWO, patient.getBloodGroup());
 			preparedStatementPatient.setInt(NumericConstants.THREE, patient.getWeight());
 			preparedStatementPatient.execute();
-		} catch (UserNameAlreadyExistException error) {
-			throw new UserNameAlreadyExistException(error.getMessage());
+		} catch (SQLIntegrityConstraintViolationException error) {
+			throw new UserNameAlreadyExistException(
+					HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE + ApplicationConstant.NAME_EXIST);
 		} catch (SQLException sqlError) {
 			throw new SQLException(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + sqlError.getMessage());
@@ -89,21 +82,18 @@ public class PatientDao {
 	 * @throws Exception Connection error and other error
 	 */
 	public boolean deletePatientDao(int id) throws Exception {
-		logger.traceEntry();
+		logger.entry(id);
 		try (Connection connection = DataBaseConfig.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(UserSqlQueryConstant.USER_DELETE_BY_ID);
 			preparedStatement.setInt(NumericConstants.ONE, id);
 			int rows = preparedStatement.executeUpdate();
 			if (rows == NumericConstants.ZERO) {
-				throw new PatientNotFoundException(HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE
-						+ ApplicationConstant.PATIENT_NOT_FOUND);
+				return false;
 			}
 			preparedStatement = connection.prepareStatement(PatientSqlQueryConstant.PATIENT_DELETE_BY_ID);
 			preparedStatement.setInt(NumericConstants.ONE, id);
 			rows = preparedStatement.executeUpdate();
 
-		} catch (PatientNotFoundException error) {
-			throw new PatientNotFoundException(error.getMessage());
 		} catch (SQLException sqlError) {
 			throw new SQLException(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + sqlError.getMessage());
@@ -141,12 +131,7 @@ public class PatientDao {
 				patient.setWeight(resultSet.getInt(ApplicationConstant.WEIGHT));
 				listOfPatient.add(patient);
 			}
-			if (listOfPatient.size() == NumericConstants.ZERO) {
-				throw new PatientNotFoundException(HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE
-						+ ApplicationConstant.PATIENT_NOT_FOUND);
-			}
-		} catch (PatientNotFoundException error) {
-			throw new PatientNotFoundException(error.getMessage());
+
 		} catch (SQLException sqlError) {
 			throw new SQLException(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + sqlError.getMessage());
@@ -154,7 +139,7 @@ public class PatientDao {
 			throw new Exception(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + error.getMessage());
 		}
-		logger.traceExit();
+		logger.traceExit(listOfPatient);
 		return listOfPatient;
 	}
 
@@ -166,7 +151,7 @@ public class PatientDao {
 	 * @throws Exception the exception
 	 */
 	public Patient readPatientByIdDao(int id) throws Exception {
-		logger.traceEntry();
+		logger.entry(id);
 		Patient patient = null;
 		try (Connection connection = DataBaseConfig.getConnection()) {
 			PreparedStatement preparedStatement = connection
@@ -184,12 +169,7 @@ public class PatientDao {
 				patient.setBloodGroup(resultSet.getString(ApplicationConstant.BLOODGROUP));
 				patient.setWeight(resultSet.getInt(ApplicationConstant.WEIGHT));
 			}
-			if (patient == null) {
-				throw new PatientNotFoundException(HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE
-						+ ApplicationConstant.PATIENT_NOT_FOUND);
-			}
-		} catch (PatientNotFoundException error) {
-			throw new PatientNotFoundException(error.getMessage());
+
 		} catch (SQLException sqlError) {
 			throw new SQLException(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + sqlError.getMessage());
@@ -197,7 +177,7 @@ public class PatientDao {
 			throw new Exception(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + error.getMessage());
 		}
-		logger.traceExit();
+		logger.traceExit(patient);
 		return patient;
 	}
 
@@ -209,7 +189,7 @@ public class PatientDao {
 	 * @throws Exception Connection error and other error
 	 */
 	public boolean updatePatientDao(Patient patient) throws Exception {
-		logger.traceEntry();
+		logger.entry(patient);
 		try (Connection connection = DataBaseConfig.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(UserSqlQueryConstant.UPDATE_BY_ID);
 			preparedStatement.setString(NumericConstants.ONE, patient.getPassword());
@@ -221,16 +201,13 @@ public class PatientDao {
 			preparedStatement.setInt(NumericConstants.SEVEN, patient.getUserId());
 			int rows = preparedStatement.executeUpdate();
 			if (rows == NumericConstants.ZERO) {
-				throw new PatientNotFoundException(HttpStatusConstant.BAD_REQUEST + ApplicationConstant.SPACE
-						+ ApplicationConstant.PATIENT_NOT_FOUND);
+				return false;
 			}
 			preparedStatement = connection.prepareStatement(PatientSqlQueryConstant.PATIENT_UPDATE_BY_ID);
 			preparedStatement.setString(NumericConstants.ONE, patient.getBloodGroup());
 			preparedStatement.setInt(NumericConstants.TWO, patient.getWeight());
 			preparedStatement.setInt(NumericConstants.THREE, patient.getUserId());
 			preparedStatement.execute();
-		} catch (PatientNotFoundException error) {
-			throw new PatientNotFoundException(error.getMessage());
 		} catch (SQLException sqlError) {
 			throw new SQLException(
 					HttpStatusConstant.INTERNAL_SERVER_ERROR + ApplicationConstant.SPACE + sqlError.getMessage());

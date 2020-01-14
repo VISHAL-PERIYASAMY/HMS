@@ -11,9 +11,6 @@ public final class UserSqlQueryConstant {
 	private UserSqlQueryConstant() {
 	}
 
-	public static final String USER_DETAIL_INSERT = "INSERT INTO `t_user_details` (`username`, `password`, `fk_role_id`,"
-			+ " `firstname`, `lastname`, `city`, `state`,`phone_number`) VALUES (?, ?, ?, ?, ?, ?, ?,?);";
-
 	public static final String USER_DELETE_BY_ID = "update t_user_details set is_active = 0 where pk_user_id = ? and is_active = 1";
 
 	public static final String UPDATE_BY_ID = "UPDATE `t_user_details` SET  `password` = ?, `firstname` = ?, `lastname` = ?, `city` = ?, "
